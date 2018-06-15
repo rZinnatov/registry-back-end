@@ -3,9 +3,9 @@
         "target": "es6",
         "module": "commonjs",
         "sourceMap": true,
-        "noImplicitAny": true,
         "noImplicitReturns": true,
-        "noImplicitThis": true
+        "noImplicitThis": true,
+        "strictNullChecks": true
     },
     "include": [
         "src/**/*"
