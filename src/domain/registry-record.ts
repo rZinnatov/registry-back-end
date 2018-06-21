@@ -8,7 +8,7 @@ export class RegistryRecord {
     constructor(
         public readonly id: number,
         public readonly name: string,
-        public readonly date: Date | null,
+        public readonly date: string | null,
         public readonly inventoryId: string | null,
         public readonly room: number | null,
         public readonly amount: number | null,
