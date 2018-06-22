@@ -12,6 +12,7 @@ export class RegistryRecord {
         public readonly inventoryId: string | null,
         public readonly room: number | null,
         public readonly amount: number | null,
-        public readonly price: number | null
+        public readonly price: number | null,
+        public readonly comment: string | null
     ) {}
 }
