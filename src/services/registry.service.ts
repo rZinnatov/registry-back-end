@@ -1,4 +1,4 @@
-import { MongoClient, Collection } from "mongodb";
+import { MongoClient, Collection, ObjectID } from "mongodb";
 import { RegistryRecord } from "../domain/registry-record";
 import { Registry } from "../domain/registry";
 
@@ -15,13 +15,13 @@ export class RegistryService {
             ;
         });
     }
-    public addOne(record: RegistryRecord, callback: () => void) {
+    public addOne(record: RegistryRecord, callback: (id: string) => void) {
         const self = this;
         self._getCollection((mongoClient, collection) => {
             collection.insertOne(record)
-                .then(() => {
+                .then((result) => {
                     mongoClient.close();
-                    callback();
+                    callback(result.insertedId.toHexString());
                 })
                 .catch(self._errorHandler)
             ; 
@@ -42,7 +42,7 @@ export class RegistryService {
     public updateOne(record: RegistryRecord, callback: () => void) {
         const self = this;
         self._getCollection((mongoClient, collection) => {
-            collection.replaceOne({ id: record.id }, record)
+            collection.replaceOne({ '_id': new ObjectID(record.id) }, record)
                 .then(() => {
                     mongoClient.close();
                     callback();
@@ -51,10 +51,10 @@ export class RegistryService {
             ; 
         });
     }
-    public remove(id: number, callback: () => void) {
+    public remove(id: string, callback: () => void) {
         const self = this;
         self._getCollection((mongoClient, collection) => {
-            collection.deleteOne({ id: id })
+            collection.deleteOne({ '_id': new ObjectID(id) })
                 .then(() => {
                     mongoClient.close();
                     callback();

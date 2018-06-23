@@ -47,7 +47,6 @@ export class ServerService {
         // TODO: Validate body
         self._registry.addOne(
             new RegistryRecord(
-                request.body.id,
                 request.body.name,
                 request.body.date,
                 request.body.inventoryId,
@@ -56,30 +55,31 @@ export class ServerService {
                 request.body.price,
                 request.body.comment
             ),
-            () => response.send(JSON.stringify({isOk:true}))
+            (id: string) => response.send(JSON.stringify({ isOk: true, id: id }))
         );
     }
     private updateRegistryRecord(request, response) {
         const self = this;
         // TODO: Validate body
+        const record = new RegistryRecord(
+            request.body.name,
+            request.body.date,
+            request.body.inventoryId,
+            request.body.room,
+            request.body.amount,
+            request.body.price,
+            request.body.comment
+        );
+        record.id = request.body.id
         self._registry.updateOne(
-            new RegistryRecord(
-                request.body.id,
-                request.body.name,
-                request.body.date,
-                request.body.inventoryId,
-                request.body.room,
-                request.body.amount,
-                request.body.price,
-                request.body.comment
-            ),
-            () => response.send(JSON.stringify({isOk:true}))
+            record,
+            () => response.send(JSON.stringify({ isOk: true }))
         );
     }
     private removeRegistryRecord(request, response) {
         const self = this;
         self._registry.remove(
-            Number(request.params.id),
+            request.params.id,
             () => response.send(JSON.stringify({ isOk: true }))
         );
     }

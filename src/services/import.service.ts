@@ -28,7 +28,6 @@ export class ImportService {
                 .pipe(csv(csvParserOptions))
                 .on('data', (record) => records.push(
                     new RegistryRecord(
-                        record.id ? Number(record.id) : -1,
                         record.name ? record.name : '',
                         record.date ? record.date : null,
                         record.inventoryId ? record.inventoryId : null,
