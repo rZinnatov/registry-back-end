@@ -22,17 +22,24 @@ export class ServerService {
             response.setHeader('Content-Type', 'application/json; charset=utf8');
             next();
         });
+        this._server.get(`${this._apiPath}/registry`, this.fetchRegistry.bind(this));
         this._server.get(`${this._apiPath}/registry/import/gs/:spreadsheetId`, this.importFromGoogleSpreadsheets.bind(this));
         this._server.listen(3000, () => console.log('Registry BackEnd is listening on port 3000'));
         // </- Init express js app -->
     }
 
+    private fetchRegistry(request, response) {
+        const self = this;
+        self._registry.getAll(
+            (registry) => response.send(JSON.stringify(registry))
+        );
+    }
     private importFromGoogleSpreadsheets(request, response) {
         const self = this;
-        this._import.fromGoogleSpreadsheets(
+        self._import.fromGoogleSpreadsheets(
             request.params.spreadsheetId,
             (registry) => {
-                self._registry.insert(
+                self._registry.add(
                     registry.records,
                     () => response.send(JSON.stringify({ isOk: true }))
                 );
