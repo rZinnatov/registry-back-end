@@ -1,5 +1,6 @@
 import { ServerService } from './server.service'
-import { RegistryService } from "./registry.service";
+import { ImportService } from "./import.service";
+import { RegistryService } from './registry.service';
 /**
  * Responsible for application startup and initial configuration.
  * Uses RAII idiom.
@@ -11,6 +12,7 @@ export class AppService {
      */
     constructor() {
         this.server = new ServerService(
+            new ImportService(),
             new RegistryService()
         );
     }

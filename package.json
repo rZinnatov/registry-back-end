@@ -5,11 +5,13 @@
   "main": "dist/index.js",
   "dependencies": {
     "@types/express": "^4.16.0",
+    "@types/mongodb": "^3.0.21",
     "body-parser": "^1.18.3",
     "csv-parser": "^1.12.1",
     "express": "^4.16.3",
     "gulp": "^3.9.1",
     "gulp-typescript": "^5.0.0-alpha.1",
+    "mongodb": "^3.0.10",
     "npm": "^6.1.0"
   },
   "devDependencies": {
