@@ -32,7 +32,7 @@ export class ServerService {
         this._server.delete(`${this._apiPath}/registry/:id`, this.removeRegistryRecord.bind(this));
         // </- Records -->
         this._server.get(`${this._apiPath}/registry/import/gs/:spreadsheetId`, this.importFromGoogleSpreadsheets.bind(this));
-        this._server.listen(3000, () => console.log('Registry BackEnd is listening on port 3000'));
+        this._server.listen(process.env.PORT || 3000, () => console.log('Registry BackEnd is listening on port 3000'));
         // </- Init express js app -->
     }
 
