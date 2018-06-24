@@ -70,7 +70,7 @@ export class RegistryService {
         }
     }
     private _getCollection(callback: (mongoClient: MongoClient, collection: Collection<any>) => void) {
-        MongoClient.connect('mongodb://localhost:27017')
+        MongoClient.connect(process.env.SIR_CONNECTION_STRING || 'mongodb://localhost:27017')
             .then((mongoClient) => {
                 const db = mongoClient.db('sir');
                 const collection = db.collection('records');
