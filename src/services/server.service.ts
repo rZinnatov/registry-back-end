@@ -37,26 +37,35 @@ export class ServerService {
     }
 
     private fetchRegistry(request, response) {
-        const self = this;
-        self._registry.getAll(
-            (registry) => response.send(JSON.stringify(registry))
-        );
+        this._registry
+            .get()
+            .then((registry) => response.send(JSON.stringify(registry)))
+            .catch((error) => {
+                // TODO: set http status
+                response.statusCode = 500;
+                response.send(JSON.stringify({ error: error }));
+            })
+        ;
     }
     private addRegistryRecord(request, response) {
-        const self = this;
         // TODO: Validate body
-        self._registry.addOne(
-            new RegistryRecord(
-                request.body.name,
-                request.body.date,
-                request.body.inventoryId,
-                request.body.room,
-                request.body.amount,
-                request.body.price,
-                request.body.comment
-            ),
-            (id: string) => response.send(JSON.stringify({ isOk: true, id: id }))
+        const newRecord = new RegistryRecord(
+            request.body.name,
+            request.body.date,
+            request.body.inventoryId,
+            request.body.room,
+            request.body.amount,
+            request.body.price,
+            request.body.comment
         );
+        this._registry
+            .addOne(newRecord)
+            .then((id: string) => response.send(JSON.stringify({ id: id })))
+            .catch((error) => {
+                // TODO: set http status
+                response.send(JSON.stringify({ error: error }));
+            })
+        ;
     }
     private updateRegistryRecord(request, response) {
         const self = this;
@@ -71,27 +80,35 @@ export class ServerService {
             request.body.comment
         );
         record.id = request.body.id
-        self._registry.updateOne(
-            record,
-            () => response.send(JSON.stringify({ isOk: true }))
-        );
+        self._registry
+            .updateOne(record)
+            .then(() => response.send())
+            .catch((error) => {
+                // TODO: set http status
+                response.send(JSON.stringify({ error: error }));
+            })
+        ;
     }
     private removeRegistryRecord(request, response) {
         const self = this;
-        self._registry.remove(
-            request.params.id,
-            () => response.send(JSON.stringify({ isOk: true }))
-        );
+        self._registry
+            .remove(request.params.id)
+            .then(() => response.send())
+            .catch((error) => {
+                // TODO: set http status
+                response.send(JSON.stringify({ error: error }));
+            })
+        ;
     }
     private importFromGoogleSpreadsheets(request, response) {
         const self = this;
         self._import.fromGoogleSpreadsheets(
             request.params.spreadsheetId,
             (registry) => {
-                self._registry.addMany(
-                    registry.records,
-                    () => response.send(JSON.stringify({ isOk: true }))
-                );
+                self._registry
+                    .addMany(registry.records)
+                    .then(() => response.send())
+                ;
             }
         );
     }

@@ -23,6 +23,7 @@ export class ImportService {
         };
 
         https.get(url, (response) => {
+            // TODO: Remake via Promise<Registry>
             const records: RegistryRecord[] = [];
             response
                 .pipe(csv(csvParserOptions))
