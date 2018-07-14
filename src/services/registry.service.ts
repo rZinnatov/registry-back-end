@@ -12,8 +12,7 @@ class MongoClientWrapper {
 export class RegistryService {
     public get(): Promise<Registry> {
         let dispose: () => void;
-        return this
-            ._getDb()
+        return this._getDb()
             .then((mongoClientWrapper) => {
                 dispose = mongoClientWrapper.dispose;
                 return mongoClientWrapper.recordsCollection
@@ -29,8 +28,7 @@ export class RegistryService {
     }
     public addOne(record: RegistryRecord): Promise<string> {
         let dispose: () => void;
-        return this
-            ._getDb()
+        return this._getDb()
             .then((mongoClientWrapper) => {
                 dispose = mongoClientWrapper.dispose;
                 return mongoClientWrapper.recordsCollection.insertOne(record);
@@ -43,8 +41,7 @@ export class RegistryService {
     }
     public addMany(records: RegistryRecord[]): Promise<void> {
         let dispose: () => void;
-        return this
-            ._getDb()
+        return this._getDb()
             .then((mongoClientWrapper) => {
                 dispose = mongoClientWrapper.dispose;
                 return mongoClientWrapper.recordsCollection.insertMany(records);
@@ -57,8 +54,7 @@ export class RegistryService {
     }
     public updateOne(record: RegistryRecord): Promise<void> {
         let dispose: () => void;
-        return this
-            ._getDb()
+        return this._getDb()
             .then((mongoClientWrapper) => {
                 dispose = mongoClientWrapper.dispose;
                 return mongoClientWrapper.recordsCollection.replaceOne({ '_id': new ObjectID(record.id) }, record);
@@ -71,8 +67,7 @@ export class RegistryService {
     }
     public remove(id: string): Promise<void> {
         let dispose: () => void;
-        return this
-            ._getDb()
+        return this._getDb()
             .then((mongoClientWrapper) => {
                 dispose = mongoClientWrapper.dispose;
                 return mongoClientWrapper.recordsCollection.deleteOne({ '_id': new ObjectID(id) });
@@ -84,11 +79,6 @@ export class RegistryService {
         ;
     }
 
-    private _errorHandler(error: any) {
-        if (error) {
-            console.log(`Error: ${error}`);
-        }
-    }
     private _getDb(): Promise<MongoClientWrapper> {
         return MongoClient
             .connect(process.env.SIR_CONNECTION_STRING || 'mongodb://localhost:27017')
