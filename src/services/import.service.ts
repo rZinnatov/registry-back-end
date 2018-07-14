@@ -25,13 +25,12 @@ export class ImportService {
         const url = `https://docs.google.com/spreadsheets/d/e/${spreadsheetId}/pub?output=csv`;
 
         return new Promise<Registry>((resolve, reject) => {
-            https.get(url, (response) => {
-                try {
-                    this.parseCsv(response, (registry) => resolve(registry));
-                } catch(e) {
-                    reject(e);
-                }
-            });
+            const processResponse = (response) => {
+                try { this.parseCsv(response, (registry) => resolve(registry)); }
+                catch(e) { reject(e); }
+            };
+            
+            https.get(url, processResponse);
         });
     }
 

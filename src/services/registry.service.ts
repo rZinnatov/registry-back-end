@@ -10,82 +10,46 @@ class MongoClientWrapper {
 }
 
 export class RegistryService {
-    public get(): Promise<Registry> {
-        let dispose: () => void;
-        return this._getDb()
-            .then((mongoClientWrapper) => {
-                dispose = mongoClientWrapper.dispose;
-                return mongoClientWrapper.recordsCollection
-                    .find()
-                    .toArray()
-                ;
-            })
-            .then((records) => {
-                dispose();
-                return new Registry(records);
-            })
-        ;
+    public async get(): Promise<Registry> {
+        const db = await this._getDb();
+        const records = await db.recordsCollection.find().toArray();
+        
+        db.dispose();
+
+        return new Registry(records);
     }
-    public addOne(record: RegistryRecord): Promise<string> {
-        let dispose: () => void;
-        return this._getDb()
-            .then((mongoClientWrapper) => {
-                dispose = mongoClientWrapper.dispose;
-                return mongoClientWrapper.recordsCollection.insertOne(record);
-            })
-            .then((result) => {
-                dispose();
-                return result.insertedId.toHexString();
-            })
-        ;
+    public async addOne(record: RegistryRecord): Promise<string> {
+        const db = await this._getDb();
+        const result = await db.recordsCollection.insertOne(record);
+
+        db.dispose();
+
+        return result.insertedId.toHexString();
     }
-    public addMany(records: RegistryRecord[]): Promise<void> {
-        let dispose: () => void;
-        return this._getDb()
-            .then((mongoClientWrapper) => {
-                dispose = mongoClientWrapper.dispose;
-                return mongoClientWrapper.recordsCollection.insertMany(records);
-            })
-            .then((result) => {
-                dispose();
-                return Promise.resolve();
-            })
-        ;
+    public async addMany(records: RegistryRecord[]): Promise<void> {
+        const db = await this._getDb();
+        await db.recordsCollection.insertMany(records);
+
+        db.dispose();
     }
-    public updateOne(record: RegistryRecord): Promise<void> {
-        let dispose: () => void;
-        return this._getDb()
-            .then((mongoClientWrapper) => {
-                dispose = mongoClientWrapper.dispose;
-                return mongoClientWrapper.recordsCollection.replaceOne({ '_id': new ObjectID(record.id) }, record);
-            })
-            .then((result) => {
-                dispose();
-                return Promise.resolve();
-            })
-        ;
+    public async updateOne(record: RegistryRecord): Promise<void> {
+        const db = await this._getDb();
+        await db.recordsCollection.replaceOne({ '_id': new ObjectID(record.id) }, record);
+
+        db.dispose();
     }
-    public remove(id: string): Promise<void> {
-        let dispose: () => void;
-        return this._getDb()
-            .then((mongoClientWrapper) => {
-                dispose = mongoClientWrapper.dispose;
-                return mongoClientWrapper.recordsCollection.deleteOne({ '_id': new ObjectID(id) });
-            })
-            .then((result) => {
-                dispose();
-                return Promise.resolve();
-            })
-        ;
+    public async remove(id: string): Promise<void> {
+        const db = await this._getDb();
+        await db.recordsCollection.deleteOne({ '_id': new ObjectID(id) });
+
+        db.dispose();
     }
 
-    private _getDb(): Promise<MongoClientWrapper> {
-        return MongoClient
-            .connect(process.env.SIR_CONNECTION_STRING || 'mongodb://localhost:27017')
-            .then((mongoClient) => new MongoClientWrapper(
-                mongoClient.db('sir').collection<RegistryRecord>('records'),
-                () => mongoClient.close()
-            ))
-        ;
+    private async _getDb(): Promise<MongoClientWrapper> {
+        const mongoClient = await MongoClient.connect(process.env.SIR_CONNECTION_STRING || 'mongodb://localhost:27017');
+        return new MongoClientWrapper(
+            await mongoClient.db('sir').collection<RegistryRecord>('records'),
+            () => mongoClient.close()
+        );
     }
 }
