@@ -102,14 +102,10 @@ export class ServerService {
     }
     private importFromGoogleSpreadsheets(request, response) {
         const self = this;
-        self._import.fromGoogleSpreadsheets(
-            request.params.spreadsheetId,
-            (registry) => {
-                self._registry
-                    .addMany(registry.records)
-                    .then(() => response.send())
-                ;
-            }
-        );
+        self._import
+            .fromGoogleSpreadsheets(request.params.spreadsheetId)
+            .then((registry) => self._registry.addMany(registry.records))
+            .then(() => response.send())
+        ;
     }
 }
